@@ -1,0 +1,6 @@
+bucket = "driftinproject-bucket"
+region = "ap-south-1"
+key_infra = "DEV/Statefile-Infra/Driftin-infra.tfstate"
+key_platform = "DEV/Statefile-Platform/Driftin-platform.tfstate"
+jump_type = "t2.micro"
+jump_ami = "ami-0cc9838aa7ab1dce7"
