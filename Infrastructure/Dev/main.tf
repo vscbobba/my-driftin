@@ -20,6 +20,7 @@ resource "aws_subnet" "public_2" {
      cidr_block = var.public_2_cidr
      vpc_id = aws_vpc.driftin-vpc.id
      availability_zone = "ap-south-1b"
+     map_public_ip_on_launch = true
      tags = {
         name = var.public_2_name
      }
@@ -74,7 +75,7 @@ resource "aws_route" "main_route" {
     destination_cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.driftin-gw.id
 }
-/*
+
 resource "aws_eip" "elasticip"{
       domain = "vpc"
 }
@@ -90,7 +91,6 @@ resource "aws_route" "nat_route" {
     destination_cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.Driftin-NAT.id
 }
-*/
 
 resource "aws_vpc" "driftin-vpc-remote" {
     cidr_block = var.vpc_cidr_remote

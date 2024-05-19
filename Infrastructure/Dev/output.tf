@@ -28,3 +28,11 @@ output "aws_subnet_remote" {
 output "aws_vpc_cidr" {
    value = aws_vpc.driftin-vpc.cidr_block
 }
+
+output "aws_az_priv_1"{
+  value = aws_subnet.private_1.availability_zone
+}
+
+output "aws_az_priv_2"{
+  value = aws_subnet.private_2.availability_zone
+}
