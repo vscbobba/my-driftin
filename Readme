@@ -1,0 +1,26 @@
+It has 3 main parts.
+
+1. Infrastructure:  VPC,SUBNET, ROUTING, NAT comes under
+
+2. Platform: Securtity group, IAM comes under here
+
+3. Application: EC2,ALB,LAMBDA,ECS cluster, S3 buckets, some software specific like Jenkins,Prometheous etc.
+   Many more server designs comes under here.
+
+Each section we have configfile--->contains S3 backend data information
+                     variable.tf and .tfvars files are using for variables storing.
+                     output.tf for exposing output values.
+
+check attached pics to initiate terraform configuration starts from Infrastructure, Platform and thenn Application.
+
+all these Three s3 backend files having the entire terraform configuration.
+
+
+
+Note1: Some codes are commented with /* , you can enable if u want. Cost purpose i disabled those.
+
+Note2: only dev environment is created using this, so you can see code in dev folders only. stage is empty, but need to create with same code with little modifications.
+
+
+
+
