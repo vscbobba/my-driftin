@@ -1,0 +1,10 @@
+#!/bin/bash
+alias ti-i='terraform init -backend-config=dev-infra.config'
+alias ti-p='terraform init -backend-config=dev-platform.config'
+alias ti-a='terraform init -backend-config=dev-application.config'
+alias ta-p='terraform apply -var-file=dev-platform.tfvars'
+alias ta-i='terraform apply -var-file=dev-infra.tfvars'
+alias ta-a='terraform apply -var-file=dev-application.tfvars'
+alias td-p='terraform destroy -var-file=dev-platform.tfvars'
+alias td-i='terraform destroy -var-file=dev-infra.tfvars'
+alias td-a='terraform destroy -var-file=dev-application.tfvars'

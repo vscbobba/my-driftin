@@ -75,7 +75,7 @@ resource "aws_route" "main_route" {
     destination_cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.driftin-gw.id
 }
-
+/*
 resource "aws_eip" "elasticip"{
       domain = "vpc"
 }
@@ -91,7 +91,7 @@ resource "aws_route" "nat_route" {
     destination_cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.Driftin-NAT.id
 }
-
+*/
 resource "aws_vpc" "driftin-vpc-remote" {
     cidr_block = var.vpc_cidr_remote
     enable_dns_hostnames = true
@@ -108,6 +108,7 @@ resource "aws_subnet" "private-remote" {
         name = var.remote_name
      }
 }
+/*
 resource "aws_route_table" "rt-remote" {
       vpc_id = aws_vpc.driftin-vpc-remote.id
 }
@@ -143,3 +144,4 @@ resource "aws_route" "route_to_vpc1" {
   vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
 }
 
+*/
