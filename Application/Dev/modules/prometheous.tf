@@ -1,8 +1,8 @@
 
 // Create a new EC2 instance
 resource "aws_instance" "prometheus_instance" {
-  ami = "ami-0cc9838aa7ab1dce7" // Amazon Linux 2 AMI, change to your desired AMI
-  instance_type = "t2.medium" // Change instance type as needed
+  ami = var.amazon_linux_2023 // Amazon Linux 2 AMI, change to your desired AMI
+  instance_type = var.jenkins_type // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
   security_groups = [data.terraform_remote_state.platform.outputs.aws_jump_SG]
   key_name = "driftin"
@@ -122,8 +122,8 @@ resource "aws_instance" "prometheus_instance" {
 
 // Create a new EC2 instance
 resource "aws_instance" "jenkins_instance" {
-  ami = "ami-0cc9838aa7ab1dce7" // Amazon Linux 2 AMI, change to your desired AMI
-  instance_type = "t2.medium" // Change instance type as needed
+  ami = var.amazon_linux_2023 // Amazon Linux 2 AMI, change to your desired AMI
+  instance_type = var.jenkins_type // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
   security_groups = [data.terraform_remote_state.platform.outputs.aws_jump_SG]
   key_name = "driftin"
@@ -190,18 +190,18 @@ resource "aws_instance" "jenkins_instance" {
 }
 
 resource "aws_route53_record" "jenkins_dns" {
-    zone_id = "Z04538961L8QK9TOW8IBT"
+    zone_id = var.zone_id
     type = "A"
-    name = "jenkins.bobbascloud.online"
+    name = var.jenkins_dns
     ttl = 300
     records = [aws_instance.jenkins_instance.public_ip]
 }
 
 
 resource "aws_route53_record" "prometheus_dns" {
-    zone_id = "Z04538961L8QK9TOW8IBT"
+    zone_id = var.zone_id
     type = "A"
-    name = "prometheus.bobbascloud.online"
+    name = var.prometheus_dns
     ttl = 300
     records = [aws_instance.prometheus_instance.public_ip]
 }
