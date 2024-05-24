@@ -4,7 +4,7 @@ resource "aws_instance" "prometheus_instance" {
   ami = var.amazon_linux_2023 // Amazon Linux 2 AMI, change to your desired AMI
   instance_type = var.jenkins_type // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
-  security_groups = [data.terraform_remote_state.platform.outputs.aws_jump_SG]
+  vpc_security_group_ids = ["${data.terraform_remote_state.platform.outputs.aws_remote_SG}"]
   key_name = "driftin"
   tags = {
     Name = "prometheus-instance"
@@ -125,7 +125,7 @@ resource "aws_instance" "jenkins_instance" {
   ami = var.amazon_linux_2023 // Amazon Linux 2 AMI, change to your desired AMI
   instance_type = var.jenkins_type // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
-  security_groups = [data.terraform_remote_state.platform.outputs.aws_jump_SG]
+  vpc_security_group_ids = ["${data.terraform_remote_state.platform.outputs.aws_remote_SG}"]
   key_name = "driftin"
   iam_instance_profile = data.terraform_remote_state.platform.outputs.s3full_instance_profile
   tags = {

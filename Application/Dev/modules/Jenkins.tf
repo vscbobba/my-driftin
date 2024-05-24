@@ -3,7 +3,7 @@ resource "aws_instance" "jenkins_instance" {
   ami = "ami-0cc9838aa7ab1dce7" // Amazon Linux 2 AMI, change to your desired AMI
   instance_type = "t2.medium" // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
-  security_groups = [data.terraform_remote_state.platform.outputs.aws_jump_SG]
+  vpc_security_group_ids = ["${data.terraform_remote_state.platform.outputs.aws_remote_SG}"]
   key_name = "driftin"
   iam_instance_profile = data.terraform_remote_state.platform.outputs.s3full_instance_profile
   tags = {
