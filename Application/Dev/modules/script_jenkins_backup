@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Define backup directory and Jenkins home directory
+BACKUP_DIR="/home/ec2-user/"
+JENKINS_HOME="/var/lib/jenkins"
+
+# Create a backup directory
+BACKUP_PATH="$BACKUP_DIR/jenkins_backup"
+mkdir -p $BACKUP_PATH
+
+# Copy Jenkins home directory to backup directory
+cp -r $JENKINS_HOME $BACKUP_PATH
+
+# Optional: Compress the backup
+tar -czf $BACKUP_PATH.tar.gz -C $BACKUP_DIR jenkins_backup
+
+# Remove the uncompressed backup directory
+rm -rf $BACKUP_PATH
+
+echo "Backup completed: $BACKUP_PATH.tar.gz"
+
+# Upload the backup to S3
+aws s3 cp $BACKUP_PATH.tar.gz s3://jenkinz-backup-bucket/jenkins_backup.tar.gz
+
+if [ $? -eq 0 ]; then
+    echo "Upload Successful"
+else
+    echo "Upload Failed"
+fi
+

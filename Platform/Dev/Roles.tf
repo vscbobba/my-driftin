@@ -53,4 +53,45 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
   role       = aws_iam_role.lambda_role.name
 }
 
+#jenkins server to get s3 full access
+resource "aws_iam_role" "s3full_role" {
+  name = "s3full_role"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "s3full_policy" {
+  name        = "s3full_policy"
+  description = "Policy to allow full access to S3"
+  policy      = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = "s3:*",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "s3full_policy_attachment" {
+  role       = aws_iam_role.s3full_role.name
+  policy_arn = aws_iam_policy.s3full_policy.arn
+}
+
+resource "aws_iam_instance_profile" "s3full_instance_profile" {
+  name = "s3full_instance_profile"
+  role = aws_iam_role.s3full_role.name
+}

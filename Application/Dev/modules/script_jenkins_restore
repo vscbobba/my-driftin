@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Variables
+S3_BUCKET="jenkinz-backup-bucket"
+BACKUP_PATH="jenkins_backup.tar.gz"
+JENKINS_HOME="/var/lib/jenkins"
+
+# Install AWS CLI if not already installed
+if ! command -v aws &> /dev/null
+then
+    sudo apt-get update
+    sudo apt-get install -y awscli
+fi
+
+# Stop Jenkins service
+sudo systemctl stop jenkins
+
+# Ensure Jenkins service is stopped
+if systemctl is-active --quiet jenkins; then
+    echo "Failed to stop Jenkins service. Exiting."
+    exit 1
+fi
+
+# Download backup from S3
+aws s3 cp s3://$S3_BUCKET/$BACKUP_PATH /tmp/jenkins_backup.tar.gz
+
+# Check if the backup file was downloaded
+if [ ! -f /tmp/jenkins_backup.tar.gz ]; then
+    echo "Backup file not found. Exiting."
+    exit 1
+fi
+
+# Extract backup
+sudo tar -xzvf /tmp/jenkins_backup.tar.gz -C /tmp
+
+sudo rsync -av --progress /tmp/jenkins_backup/jenkins/ /var/lib/jenkins/
+
+# Set proper permissions
+sudo chown -R jenkins:jenkins $JENKINS_HOME
+
+# Start Jenkins service
+sudo systemctl restart jenkins

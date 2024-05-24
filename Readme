@@ -1,6 +1,6 @@
 It has 3 main parts.
 
-1. Infrastructure:  VPC,SUBNET, ROUTING, NAT comes under
+1. Infrastructure:  VPC,SUBNET, ROUTING, NAT, VPC peering also comes under here.
 
 2. Platform: Securtity group, IAM comes under here
 
