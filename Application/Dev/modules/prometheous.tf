@@ -4,7 +4,7 @@ resource "aws_instance" "prometheus_instance" {
   ami = var.amazon_linux_2023 // Amazon Linux 2 AMI, change to your desired AMI
   instance_type = var.jenkins_type // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
-  vpc_security_group_ids = ["${data.terraform_remote_state.platform.outputs.aws_remote_SG}"]
+  vpc_security_group_ids = [data.terraform_remote_state.platform.outputs.aws_jump_SG]
   key_name = "driftin"
   tags = {
     Name = "prometheus-instance"
@@ -66,7 +66,8 @@ resource "aws_instance" "prometheus_instance" {
     "WantedBy=multi-user.target",
     "EOF",
     "sudo systemctl daemon-reload",
-    "sudo systemctl start prometheus",
+    "sudo systemctl restart prometheus",
+    "sudo systemctl enable prometheus",
     "sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.2.2/node_exporter-1.2.2.linux-amd64.tar.gz",
     "sudo tar xvfz node_exporter-*.tar.gz",
     "sudo rm -rf node_exporter-1.2.2.linux-amd64.tar.gz",
@@ -90,7 +91,7 @@ resource "aws_instance" "prometheus_instance" {
     "WantedBy=multi-user.target",
     "EOF",
     "sudo systemctl enable node_exporter",
-    "sudo systemctl start node_exporter",
+    "sudo systemctl restart node_exporter",
     "sudo yum update -y",
     "sudo cat <<EOF | sudo tee /etc/yum.repos.d/grafana.repo > /dev/null",
     "[grafana]",
@@ -105,8 +106,7 @@ resource "aws_instance" "prometheus_instance" {
     "EOF",
     "sudo yum install grafana -y",
     "sudo systemctl daemon-reload",
-    "sudo systemctl start grafana-server",
-    "sudo systemctl status grafana-server",
+    "sudo systemctl restart grafana-server",
     "sudo systemctl enable grafana-server.service",
   ]  
     
@@ -125,7 +125,7 @@ resource "aws_instance" "jenkins_instance" {
   ami = var.amazon_linux_2023 // Amazon Linux 2 AMI, change to your desired AMI
   instance_type = var.jenkins_type // Change instance type as needed
   subnet_id = data.terraform_remote_state.infrastructure.outputs.aws_pub_1
-  vpc_security_group_ids = ["${data.terraform_remote_state.platform.outputs.aws_remote_SG}"]
+  vpc_security_group_ids = ["${data.terraform_remote_state.platform.outputs.aws_jump_SG}"]
   key_name = "driftin"
   iam_instance_profile = data.terraform_remote_state.platform.outputs.s3full_instance_profile
   tags = {
