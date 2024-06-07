@@ -1,9 +1,16 @@
 resource "aws_ecs_cluster" "jenkins_master_cluster" {
   name = "jenkins-master-cluster"
 }
-
 resource "aws_ecs_cluster" "jenkins_slave_cluster" {
   name = "jenkins-slave-cluster"
+}
+resource "aws_cloudwatch_log_group" "ecs_log_jenkins_master" {
+   name = "/ecs/jenkins-master"
+   retention_in_days = 1
+}
+resource "aws_cloudwatch_log_group" "ecs_log_jenkins_slave" {
+   name = "/ecs/jenkins-slave"
+   retention_in_days = 1
 }
 
 resource "aws_ecs_task_definition" "jenkins_master" {
@@ -23,12 +30,16 @@ resource "aws_ecs_task_definition" "jenkins_master" {
         {
           containerPort = 8080
           hostPort      = 8080
+        },
+        {
+          containerPort = 50000
+          hostPort      = 50000
         }
       ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/jenkins-master"
+          "awslogs-group"         = "${aws_cloudwatch_log_group.ecs_log_jenkins_master.name}"
           "awslogs-region"        = "ap-south-1"
           "awslogs-stream-prefix" = "ecs"
         }
@@ -48,13 +59,27 @@ resource "aws_ecs_task_definition" "jenkins_slave" {
   container_definitions = jsonencode([
     {
       name      = "jenkins-slave"
-      image     = "jenkins/jnlp-slave"
+      image     = "jenkins/jnlp-slave:latest"
       essential = true
+       environment = [
+        {
+          name  = "JENKINS_URL"
+          value = "http://${aws_ecs_service.jenkins_master_service.name}:8080"
+        },
+        {
+          name  = "JENKINS_SECRET"
+          value = "myjenkins"  // Replace with actual secret
+        },
+        {
+          name  = "JENKINS_AGENT_NAME"
+          value = "jenkins-slave"
+        }
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/jenkins-slave"
-          "awslogs-region"        = "ap-sotuh-1"
+          "awslogs-group"         = "${aws_cloudwatch_log_group.ecs_log_jenkins_slave.name}"
+          "awslogs-region"        = "ap-south-1"
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -84,7 +109,7 @@ resource "aws_ecs_service" "jenkins_slave_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [data.terraform_remote_state.infrastructure.outputs.aws_priv_1,data.terraform_remote_state.infrastructure.outputs.aws_priv_2] // Specify your subnet IDs
+    subnets         = [data.terraform_remote_state.infrastructure.outputs.aws_pub_1,data.terraform_remote_state.infrastructure.outputs.aws_pub_2] // Specify your subnet IDs
     security_groups = [data.terraform_remote_state.platform.outputs.aws_jump_SG]  // Specify your security group IDs
     assign_public_ip = true
   }
