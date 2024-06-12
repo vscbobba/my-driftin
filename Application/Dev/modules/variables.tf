@@ -21,3 +21,14 @@ variable "prometheus_dns" {}
 variable "zone_id" {}
 
 variable "amazon_linux_2023" {}
+
+variable "project_name" {
+  default = "firelens"
+}
+
+variable "service" {
+  default = "ecs-service"
+}
+variable "env" {
+  default = "dev"
+}
